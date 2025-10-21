@@ -3,15 +3,16 @@ package entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "employees",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"})})
+        uniqueConstraints = { @UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"}) })
 public class Employee {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank @Size(min = 3, max = 50)
     private String username;
 
     @NotBlank
@@ -30,6 +31,7 @@ public class Employee {
 
     private String avatarPath;
 
+    //getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

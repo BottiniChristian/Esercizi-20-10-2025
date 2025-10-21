@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import services.JpaUserDetailsService;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
     private final JpaUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // per h2-console
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -51,5 +51,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
 

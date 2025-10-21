@@ -13,8 +13,7 @@ public class JwtUtil {
     private final Key key;
     private final long expirationMs;
 
-    public JwtUtil(@Value("${app.jwt.secret}") String secret,
-                   @Value("${app.jwt.expiration-ms}") long expirationMs) {
+    public JwtUtil(@Value("${app.jwt.secret}") String secret, @Value("${app.jwt.expiration-ms}") long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMs = expirationMs;
     }
@@ -44,4 +43,3 @@ public class JwtUtil {
         }
     }
 }
-

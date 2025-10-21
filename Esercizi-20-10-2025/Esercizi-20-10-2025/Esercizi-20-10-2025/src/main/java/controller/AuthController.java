@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import repositories.EmployeeRepository;
 import security.JwtUtil;
-import entities.Employee;
 
 import java.util.Map;
 
@@ -20,13 +19,14 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil,
-                          repositories.EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+                          EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    //login riceve email e password e ritorna token JWT
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest req) {
         try {
@@ -45,46 +45,21 @@ public class AuthController {
         if (employeeRepository.existsByEmail(r.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("error", "Email già in uso"));
         }
-        if (employeeRepository.existsByUsername(r.getUsername())) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Username già in uso"));
-        }
-        Employee e = new Employee();
+        entities.Employee e = new entities.Employee();
         e.setEmail(r.getEmail());
         e.setUsername(r.getUsername());
         e.setFirstName(r.getFirstName());
         e.setLastName(r.getLastName());
-        e.setPassword(passwordEncoder.encode(r.getPassword())); // HASH con BCrypt
+        e.setPassword(passwordEncoder.encode(r.getPassword()));
         e.setRole("ROLE_USER");
         employeeRepository.save(e);
         return ResponseEntity.status(201).body(Map.of("msg", "utente creato"));
     }
 }
 
-class AuthRequest {
-    private String email;
-    private String password;
-    public String getEmail(){return email;}
-    public String getPassword(){return password;}
-    public void setEmail(String email){this.email = email;}
-    public void setPassword(String password){this.password = password;}
+//DTOs interni
+class AuthRequest { private String email; private String password; public String getEmail(){return email;} public String getPassword(){return password;} }
+class RegisterRequest { private String email; private String password; private String username; private String firstName; private String lastName;
+    public String getEmail(){return email;} public String getPassword(){return password;} public String getUsername(){return username;}
+    public String getFirstName(){return firstName;} public String getLastName(){return lastName;}
 }
-
-class RegisterRequest {
-    private String email;
-    private String password;
-    private String username;
-    private String firstName;
-    private String lastName;
-
-    public String getEmail(){return email;}
-    public void setEmail(String email){this.email=email;}
-    public String getPassword(){return password;}
-    public void setPassword(String password){this.password=password;}
-    public String getUsername(){return username;}
-    public void setUsername(String username){this.username=username;}
-    public String getFirstName(){return firstName;}
-    public void setFirstName(String firstName){this.firstName=firstName;}
-    public String getLastName(){return lastName;}
-    public void setLastName(String lastName){this.lastName=lastName;}
-}
-
